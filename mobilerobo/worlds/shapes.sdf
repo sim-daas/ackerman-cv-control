@@ -54,7 +54,10 @@
         <collision name="col"><geometry><sphere><radius>0.2</radius></sphere></geometry></collision>
         <visual name="vis">
           <geometry><sphere><radius>0.2</radius></sphere></geometry>
-          <material><ambient>0.1 0.1 0.8 1</ambient></material>
+          <material>
+            <ambient>0.0 1.0 0.0 1</ambient>
+            <diffuse>0.0 1.0 0.0 1</diffuse>
+          </material>
         </visual>
       </link>
     </model>
@@ -65,7 +68,10 @@
         <collision name="col"><geometry><capsule><radius>0.1</radius><length>0.30</length></capsule></geometry></collision>
         <visual name="vis">
           <geometry><capsule><radius>0.1</radius><length>0.30</length></capsule></geometry>
-          <material><ambient>1.0 0.5 0.0 1</ambient></material> 
+          <material>
+            <ambient>0.0 0.0 1.0 1</ambient>
+            <diffuse>0.0 0.0 1.0 1</diffuse>
+          </material> 
         </visual>
       </link>
     </model>
@@ -76,7 +82,10 @@
         <collision name="col"><geometry><cylinder><radius>0.1</radius><length>0.30</length></cylinder></geometry></collision>
         <visual name="vis">
           <geometry><cylinder><radius>0.1</radius><length>0.30</length></cylinder></geometry>
-          <material><ambient>0.1 0.8 0.1 1</ambient></material>
+          <material>
+            <ambient>1.0 1.0 0.0 1</ambient>
+            <diffuse>1.0 1.0 0.0 1</diffuse>
+          </material>
         </visual>
       </link>
     </model>

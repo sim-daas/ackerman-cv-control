@@ -119,86 +119,87 @@ class PerceptionNode(Node):
             return
 
         img_h, img_w = frame.shape[:2]
+        debug_frame = frame.copy()
 
-        # ── 1. HSV colour filtering (two-range red mask) ──────────────────────
+        # ── 1. Saturation Thresholding (Isolates colors from gray) ──────────
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        lo1, hi1, lo2, hi2 = self._get_hsv_params()
-        mask1 = cv2.inRange(hsv, lo1, hi1)
-        mask2 = cv2.inRange(hsv, lo2, hi2)
-        mask  = cv2.bitwise_or(mask1, mask2)
+        # S channel is index 1. We look for saturated colors (S > 50)
+        s_channel = hsv[:, :, 1]
+        _, mask = cv2.threshold(s_channel, 50, 255, cv2.THRESH_BINARY)
+        
+        # Cleanup mask
+        kernel = np.ones((5, 5), np.uint8)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_DILATE, kernel, iterations=1)
 
-        # Morphological cleanup — remove speckle, fill gaps
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
-        mask   = cv2.morphologyEx(mask, cv2.MORPH_OPEN,   kernel)
-        mask   = cv2.morphologyEx(mask, cv2.MORPH_DILATE, kernel, iterations=2)
-
-        # ── 2. Contour detection ──────────────────────────────────────────────
+        # ── 2. Find Contours ──────────────────────────────────────────────
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
+        
+        best = None
+        max_area = 0
+        cx, cy, area = 0, 0, 0
+        
         min_area = self.get_parameter('min_contour_area').value
 
-        # Filter: area threshold + 4-sided polygon (box shape)
-        box_candidates = [
-            c for c in contours
-            if cv2.contourArea(c) >= min_area and self._is_box_contour(c)
-        ]
+        # Draw all valid-area contours in blue for debug
+        for cnt in contours:
+            if cv2.contourArea(cnt) > min_area:
+                cv2.drawContours(debug_frame, [cnt], -1, (255, 0, 0), 1)
 
-        # ── 3. Select best candidate (largest = closest) ──────────────────────
-        debug_frame = frame.copy()
-        cv2.putText(debug_frame, 'Looking for BOX...', (10, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 165, 255), 2)
+        # Iterate to find the best box
+        for cnt in contours:
+            area_cnt = cv2.contourArea(cnt)
+            if area_cnt < min_area:
+                continue
 
-        if box_candidates:
-            best = max(box_candidates, key=cv2.contourArea)
-            area = cv2.contourArea(best)
+            # ── 3. Shape Analysis ─────────────────────────────────────────────
+            # Polygon approximation
+            peri = cv2.arcLength(cnt, True)
+            approx = cv2.approxPolyDP(cnt, 0.04 * peri, True)
 
-            # Centroid via moments
-            M  = cv2.moments(best)
-            cx = int(M['m10'] / M['m00']) if M['m00'] != 0 else img_w // 2
-            cy = int(M['m01'] / M['m00']) if M['m00'] != 0 else img_h // 2
+            # Look for quadrilateral-like shapes (4-8 vertices)
+            if len(approx) == 4:
+                if area_cnt > max_area:
+                    max_area = area_cnt
+                    best = approx
+                    area = area_cnt
 
-            # ── 4. Publish target info ────────────────────────────────────────
+        if best is not None:
+            # Centroid
+            M = cv2.moments(best)
+            if M['m00'] > 0:
+                cx = int(M['m10'] / M['m00'])
+                cy = int(M['m01'] / M['m00'])
+            
+            # ── 4. Publish Target Info ───────────────────────────────────────
             payload = json.dumps({
-                'cx':    cx,
-                'cy':    cy,
-                'area':  round(area, 1),
+                'cx': cx,
+                'cy': cy,
+                'area': round(area, 1),
                 'img_w': img_w,
                 'img_h': img_h,
             })
             self._pub_target.publish(String(data=payload))
 
-        # ── 5. Annotate debug image ───────────────────────────────────────
-        # Draw ALL valid contours in blue for debugging
-        for cnt in contours:
-            cv2.drawContours(debug_frame, [cnt], -1, (255, 0, 0), 1)
-
-        if best is not None:
-            # Draw BEST contour in green
+            # Annotate BEST
             cv2.drawContours(debug_frame, [best], -1, (0, 255, 0), 2)
             cv2.circle(debug_frame, (cx, cy), 6, (0, 0, 255), -1)
-
-        # Cross-hair at image centre
-        cv2.line(debug_frame, (img_w // 2, 0), (img_w // 2, img_h), (200, 200, 200), 1)
-        
-        if best is not None:
-            # Lateral error line
             cv2.line(debug_frame, (img_w // 2, cy), (cx, cy), (0, 0, 255), 2)
-            cv2.putText(debug_frame,
-                        f'BOX: cx={cx} area={int(area)}',
+            cv2.putText(debug_frame, f'BOX: cx={cx} area={int(area)}', 
                         (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
         else:
             cv2.putText(debug_frame, 'TARGET LOST', (10, 30), 
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
-        # Create HSV mask debug view (convert grayscale to BGR for concatenation)
-        mask_bgr = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
-        
-        # Concatenate side-by-side: [Annotated | Mask]
-        composite_debug = cv2.hconcat([debug_frame, mask_bgr])
+        # Cross-hair
+        cv2.line(debug_frame, (img_w // 2, 0), (img_w // 2, img_h), (200, 200, 200), 1)
 
-        # Publish debug image
+        # ── 5. Create Debug Composite ───────────────────────────────────────
+        mask_bgr = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
+        composite = cv2.hconcat([debug_frame, mask_bgr])
+
         try:
-            debug_msg = self._bridge.cv2_to_imgmsg(composite_debug, encoding='bgr8')
+            debug_msg = self._bridge.cv2_to_imgmsg(composite, encoding='bgr8')
             debug_msg.header = msg.header
             self._pub_debug.publish(debug_msg)
         except Exception as e:
