@@ -14,12 +14,12 @@
   gz_type_name: gz.msgs.CameraInfo
   direction: GZ_TO_ROS
 
-# Ackermann controller cmd_vel (TwistStamped in Jazzy)
-- ros_topic_name: /ackermann_steering_controller/cmd_vel
-  gz_topic_name: /ackermann_steering_controller/cmd_vel
-  ros_type_name: geometry_msgs/msg/TwistStamped
-  gz_type_name: gz.msgs.Twist
-  direction: ROS_TO_GZ
+# # Ackermann controller cmd_vel
+# - ros_topic_name: /ackermann_steering_controller/cmd_vel
+#   gz_topic_name: /ackermann_steering_controller/cmd_vel
+#   ros_type_name: geometry_msgs/msg/TwistStamped
+#   gz_type_name: gz.msgs.Twist
+#   direction: ROS_TO_GZ
 
 # Odometry
 - ros_topic_name: /ackermann_steering_controller/odometry

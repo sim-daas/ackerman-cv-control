@@ -134,7 +134,7 @@ class ControlNode(Node):
             String, '/perception/target_info', self._target_callback, 10
         )
         self._pub = self.create_publisher(
-            TwistStamped, '/ackermann_steering_controller/cmd_vel', 10
+            TwistStamped, '/ackermann_steering_controller/reference', 10
         )
 
         # Watchdog timer: if no target received, send stop/scan command

@@ -14,12 +14,21 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
 
+    from launch.actions import DeclareLaunchArgument
+    from launch.substitutions import LaunchConfiguration
+
+    use_sim_time_arg = DeclareLaunchArgument(
+        'use_sim_time', default_value='true',
+        description='Use simulation clock'
+    )
+
     perception_node = Node(
         package='mobilerobo',
         executable='perception_node',
         name='perception_node',
         output='screen',
         parameters=[{
+            'use_sim_time': LaunchConfiguration('use_sim_time'),
             # HSV range for red (OpenCV hue 0-179)
             # Red wraps around hue=0/179, so we use two ranges merged in the node.
             'h_low1':   0,   's_low1': 100, 'v_low1': 60,
@@ -37,6 +46,7 @@ def generate_launch_description():
         name='control_node',
         output='screen',
         parameters=[{
+            'use_sim_time': LaunchConfiguration('use_sim_time'),
             # PID gains — Steering (lateral pixel error → angular.z)
             'steer_kp':  0.003,
             'steer_ki':  0.0,
@@ -57,6 +67,7 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        use_sim_time_arg,
         perception_node,
         control_node,
     ])

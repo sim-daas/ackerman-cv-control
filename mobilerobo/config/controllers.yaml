@@ -7,6 +7,7 @@
 
 controller_manager:
   ros__parameters:
+    use_sim_time: true
     update_rate: 100  # Hz
 
     ackermann_steering_controller:
@@ -19,21 +20,21 @@ ackermann_steering_controller:
   ros__parameters:
     # --- Joints ---
     # Rear wheels provide traction (velocity-controlled)
-    rear_wheels_names: [BL_WHEEL_JOINT, BR_WHEEL_JOINT]
+    traction_joints_names: [BL_WHEEL_JOINT, BR_WHEEL_JOINT]
     # Front joints do the steering (position-controlled)
-    front_steer_joint_names: [FL_STEERING_JOINT, FR_STEERING_JOINT]
+    steering_joints_names: [FL_STEERING_JOINT, FR_STEERING_JOINT]
 
     # --- Kinematics ---
     # wheelbase: distance from rear axle to front axle
     # front axle x = 0.16174, rear axle x = -0.13328 (from base_link origin)
     wheelbase: 0.295
 
-    # front_wheels_radius = rear_wheels_radius = 0.05027 m
-    front_wheels_radius: 0.05027
-    rear_wheels_radius: 0.05027
+    # Traction and steering wheel radii
+    traction_wheels_radius: 0.05027
+    steering_wheels_radius: 0.05027
 
     # Lateral distance between left and right rear wheels
-    rear_wheels_state_names: [BL_WHEEL_JOINT, BR_WHEEL_JOINT]
+    traction_joints_state_names: [BL_WHEEL_JOINT, BR_WHEEL_JOINT]
 
     # --- Odometry ---
     odom_frame_id: odom
