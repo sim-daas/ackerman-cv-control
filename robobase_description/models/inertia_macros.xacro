@@ -1,0 +1,61 @@
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- Default density (kg/m^3) -->
+  <xacro:property name="default_density" value="27"/>
+
+  <!-- Inertial for a box (URDF axes aligned, origin at box center) -->
+  <!-- If mass not provided, computed as density * x * y * z -->
+  <xacro:macro name="inertial_box" params="x y z mass:='' density:=${default_density} *origin">
+    <xacro:if value="${mass == ''}">
+      <xacro:property name="_ibox_mass" value="${density * x * y * z}"/>
+    </xacro:if>
+    <xacro:if value="${mass != ''}">
+      <xacro:property name="_ibox_mass" value="${mass}"/>
+    </xacro:if>
+    <inertial>
+      <xacro:insert_block name="origin"/>
+      <mass value="${_ibox_mass}"/>
+      <inertia
+        ixx="${(1/12.0) * _ibox_mass * (y*y + z*z)}" ixy="0" ixz="0"
+        iyy="${(1/12.0) * _ibox_mass * (x*x + z*z)}" iyz="0"
+        izz="${(1/12.0) * _ibox_mass * (x*x + y*y)}"/>
+    </inertial>
+  </xacro:macro>
+
+  <!-- Inertial for a solid cylinder whose axis is the URDF Z axis -->
+  <!-- If mass not provided, computed as density * pi * r^2 * length -->
+  <xacro:macro name="inertial_cylinder" params="radius length mass:='' density:=${default_density} *origin">
+    <xacro:if value="${mass == ''}">
+      <xacro:property name="_icyl_mass" value="${density * 3.141592653589793 * radius * radius * length}"/>
+    </xacro:if>
+    <xacro:if value="${mass != ''}">
+      <xacro:property name="_icyl_mass" value="${mass}"/>
+    </xacro:if>
+    <inertial>
+      <xacro:insert_block name="origin"/>
+      <mass value="${_icyl_mass}"/>
+      <inertia
+        ixx="${(1/12.0) * _icyl_mass * (3*radius*radius + length*length)}" ixy="0" ixz="0"
+        iyy="${(1/12.0) * _icyl_mass * (3*radius*radius + length*length)}" iyz="0"
+        izz="${0.5 * _icyl_mass * radius * radius}"/>
+    </inertial>
+  </xacro:macro>
+
+  <!-- Inertial for a solid sphere -->
+  <!-- If mass not provided, computed as density * (4/3) * pi * r^3 -->
+  <xacro:macro name="inertial_sphere" params="radius mass:='' density:=${default_density} *origin">
+    <xacro:if value="${mass == ''}">
+      <xacro:property name="_isphere_mass" value="${density * (4.0/3.0) * 3.141592653589793 * radius * radius * radius}"/>
+    </xacro:if>
+    <xacro:if value="${mass != ''}">
+      <xacro:property name="_isphere_mass" value="${mass}"/>
+    </xacro:if>
+    <inertial>
+      <xacro:insert_block name="origin"/>
+      <mass value="${_isphere_mass}"/>
+      <inertia
+        ixx="${(2.0/5.0) * _isphere_mass * radius * radius}" ixy="0" ixz="0"
+        iyy="${(2.0/5.0) * _isphere_mass * radius * radius}" iyz="0"
+        izz="${(2.0/5.0) * _isphere_mass * radius * radius}"/>
+    </inertial>
+  </xacro:macro>
+</robot>

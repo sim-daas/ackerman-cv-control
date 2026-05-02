@@ -1,0 +1,33 @@
+Robotics Software Assignment Brief 
+Perception-to-Action Pipeline for Ackerman Mobile Robot 
+Objective: Design and implement a complete ROS 2 perception-to-action pipeline. The candidate  must reconstruct a partially stripped simulation architecture, implement computer vision to identify  a specific target, and write control algorithms to navigate an Ackerman-steered robot toward it. 
+Project overview 
+Parameter 
+Design Value / Constraint
+Robot Kinematics 
+Ackerman Steering (Strict constraint: cannot spin in place)
+Simulation Environment 
+Gazebo (Ignition)
+Target Object 
+Box
+Decoy Objects 
+Sphere, Cylinder, Capsule
+Provided Resources
+Barebones URDF (ack.urdf.xacro), World File (shapes.sdf), Reference Photo
+
+
+
+Functional Requirements 
+● Architecture & Setup: The provided URDF contains only visual and collision links/joints.  You must research, select, and integrate the correct Gazebo control and camera plugins  to make the robot functional. You are expected to configure your own communication  bridges and launch files. 
+● Perception (Computer Vision): Develop a vision node using OpenCV to actively process  the camera feed. It must isolate and detect the target object (Box) while ignoring all decoys.
+Confidential - for candidate evaluation use only 1 
+● Navigation & Control: Develop a control node that calculates the visual error of the target  
+and translates it into appropriate driving commands. 
+● Kinematic Constraints: The control logic must respect Ackerman turning constraints.  Algorithms that treat the robot as a differential-drive vehicle (e.g., stopping and spinning in  place to face the target) will result in immediate disqualification. 
+● Robustness Test: The system must be dynamic. If the 4 objects are shuffled into different  positions, the robot must still successfully identify and navigate to the Box. 
+Submission deliverables 
+1. The Codebase: A link to a clean, well-documented GitHub repository containing your  ROS 2 workspace, launch files, updated URDF, and perception/control nodes. 
+2. Video Demonstration (2-3 Minutes): A screen recording showing your Gazebo  simulation running alongside your active terminal. You must demonstrate the robot  successfully reaching the target in at least 3 shuffled object arrangements. Briefly  explain your control and vision logic verbally. 
+3. Debug & Prompt Log (PDF): A short technical report detailing your R&D process. 
+
+Special instruction: Specific node communication paths (e.g., exact topic names for camera or velocity) have  been intentionally omitted. You are expected to define and map these yourself based on the plugins you configure.  Where details are not fully defined, make reasonable engineering assumptions and clearly state them in your report.

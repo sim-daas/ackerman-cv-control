@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Red color -->
+  <xacro:macro name="red">
+    <color rgba="1.0 0.0 0.0 1.0"/>
+  </xacro:macro>
+
+  <!-- Green color -->
+  <xacro:macro name="green">
+    <color rgba="0.0 1.0 0.0 1.0"/>
+  </xacro:macro>
+
+  <!-- Blue color -->
+  <xacro:macro name="blue">
+    <color rgba="0.0 0.0 1.0 1.0"/>
+  </xacro:macro>
+  
+  <!-- White color -->
+  <xacro:macro name="white">
+    <color rgba="1.0 1.0 1.0 1.0"/>
+  </xacro:macro>
+  
+  <!-- Black color -->
+  <xacro:macro name="black">
+    <color rgba="0.0 0.0 0.0 1.0"/>
+  </xacro:macro>
+
+  <!-- Gray color -->
+  <xacro:macro name="gray">
+    <color rgba="0.5 0.5 0.5 1.0"/>
+  </xacro:macro>
+  
+  <!-- Light Gray color -->
+  <xacro:macro name="light_gray">
+    <color rgba="0.75 0.75 0.75 1.0"/>
+  </xacro:macro>
+  
+  <!-- Silver color -->
+  <xacro:macro name="silver">
+    <color rgba="0.75 0.75 0.75 1.0"/>
+  </xacro:macro>
+  
+  <!-- Orange color -->
+  <xacro:macro name="orange">
+    <color rgba="1.0 0.5 0.0 1.0"/>
+  </xacro:macro>
+  
+  <!-- Yellow color -->
+  <xacro:macro name="yellow">
+    <color rgba="1.0 1.0 0.0 1.0"/>
+  </xacro:macro>
+  
+  <!-- Cyan color -->
+  <xacro:macro name="cyan">
+    <color rgba="0.0 1.0 1.0 1.0"/>
+  </xacro:macro>
+
+  <!-- Magenta color -->
+  <xacro:macro name="magenta">
+    <color rgba="1.0 0.0 1.0 1.0"/>
+  </xacro:macro>
+
+  <!-- Purple color -->
+  <xacro:macro name="purple">
+    <color rgba="0.5 0.0 0.5 1.0"/>
+  </xacro:macro>
+
+  <!-- Brown color -->
+  <xacro:macro name="brown">
+    <color rgba="0.6 0.4 0.2 1.0"/>
+  </xacro:macro>
+  
+</robot>

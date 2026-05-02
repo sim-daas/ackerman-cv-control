@@ -1,0 +1,70 @@
+# controllers.yaml — Ackerman Steering Robot
+#
+# Uses ackermann_steering_controller from ros2_controllers.
+# Rear wheels are the traction joints (velocity-controlled).
+# Front steering joints are position-controlled.
+# The controller internally computes per-wheel Ackerman angles.
+
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+
+    ackermann_steering_controller:
+      type: ackermann_steering_controller/AckermannSteeringController
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+ackermann_steering_controller:
+  ros__parameters:
+    # --- Joints ---
+    # Rear wheels provide traction (velocity-controlled)
+    rear_wheels_names: [BL_WHEEL_JOINT, BR_WHEEL_JOINT]
+    # Front joints do the steering (position-controlled)
+    front_steer_joint_names: [FL_STEERING_JOINT, FR_STEERING_JOINT]
+
+    # --- Kinematics ---
+    # wheelbase: distance from rear axle to front axle
+    # front axle x = 0.16174, rear axle x = -0.13328 (from base_link origin)
+    wheelbase: 0.295
+
+    # front_wheels_radius = rear_wheels_radius = 0.05027 m
+    front_wheels_radius: 0.05027
+    rear_wheels_radius: 0.05027
+
+    # Lateral distance between left and right rear wheels
+    rear_wheels_state_names: [BL_WHEEL_JOINT, BR_WHEEL_JOINT]
+
+    # --- Odometry ---
+    odom_frame_id: odom
+    base_frame_id: base_footprint
+    enable_odom_tf: true
+    open_loop: false
+
+    # --- Publish ---
+    publish_rate: 50.0
+
+    # --- Command ---
+    # cmd_vel is geometry_msgs/TwistStamped (Jazzy default)
+    use_stamped_vel: true
+    cmd_vel_timeout: 0.5
+
+    # --- Velocity / Acceleration Limits ---
+    linear.x.has_velocity_limits: true
+    linear.x.max_velocity:  0.8   # m/s
+    linear.x.min_velocity: -0.3   # m/s (allow small reverse for recovery)
+    linear.x.has_acceleration_limits: true
+    linear.x.max_acceleration: 0.5
+
+    angular.z.has_velocity_limits: true
+    angular.z.max_velocity: 0.8   # rad/s (maps to steering angle via wheelbase)
+
+joint_state_broadcaster:
+  ros__parameters:
+    joints:
+      - FL_STEERING_JOINT
+      - FR_STEERING_JOINT
+      - FL_WHEEL_JOINT
+      - FR_WHEEL_JOINT
+      - BL_WHEEL_JOINT
+      - BR_WHEEL_JOINT

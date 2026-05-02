@@ -1,0 +1,131 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <world name="supermarket_world">
+    <plugin
+      filename="gz-sim-physics-system"
+      name="gz::sim::systems::Physics">
+    </plugin>
+    <plugin
+      filename="gz-sim-user-commands-system"
+      name="gz::sim::systems::UserCommands">
+    </plugin>
+    <plugin
+      filename="gz-sim-scene-broadcaster-system"
+      name="gz::sim::systems::SceneBroadcaster">
+    </plugin>
+
+    <!-- Physical and Lighting Settings -->
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Sun</uri>
+    </include>
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Ground Plane</uri>
+    </include>
+
+    <!-- Outer Walls (15m x 15m) with 2 large gaps (Entrances) -->
+    <!-- Front Wall (with Entrance 1) -->
+    <model name="wall_front_left">
+      <static>true</static>
+      <pose>-5 -7.5 1.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>5 0.5 3</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>5 0.5 3</size></box></geometry><material><ambient>0.7 0.7 0.7 1</ambient><diffuse>0.7 0.7 0.7 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="wall_front_right">
+      <static>true</static>
+      <pose>5 -7.5 1.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>5 0.5 3</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>5 0.5 3</size></box></geometry><material><ambient>0.7 0.7 0.7 1</ambient><diffuse>0.7 0.7 0.7 1</diffuse></material></visual>
+      </link>
+    </model>
+    <!-- Back Wall (with Entrance 2) -->
+    <model name="wall_back_left">
+      <static>true</static>
+      <pose>-5 7.5 1.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>5 0.5 3</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>5 0.5 3</size></box></geometry><material><ambient>0.7 0.7 0.7 1</ambient><diffuse>0.7 0.7 0.7 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="wall_back_right">
+      <static>true</static>
+      <pose>5 7.5 1.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>5 0.5 3</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>5 0.5 3</size></box></geometry><material><ambient>0.7 0.7 0.7 1</ambient><diffuse>0.7 0.7 0.7 1</diffuse></material></visual>
+      </link>
+    </model>
+    <!-- Side Walls -->
+    <model name="wall_left">
+      <static>true</static>
+      <pose>-7.5 0 1.5 0 0 1.570796</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>15.5 0.5 3</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>15.5 0.5 3</size></box></geometry><material><ambient>0.7 0.7 0.7 1</ambient><diffuse>0.7 0.7 0.7 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="wall_right">
+      <static>true</static>
+      <pose>7.5 0 1.5 0 0 1.570796</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>15.5 0.5 3</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>15.5 0.5 3</size></box></geometry><material><ambient>0.7 0.7 0.7 1</ambient><diffuse>0.7 0.7 0.7 1</diffuse></material></visual>
+      </link>
+    </model>
+
+    <!-- 3 Racks (Boxes) -->
+    <model name="rack_1">
+      <static>true</static>
+      <pose>-4 0 1 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>1.5 4 2</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>1.5 4 2</size></box></geometry><material><ambient>0.6 0.6 0.6 1</ambient><diffuse>0.6 0.6 0.6 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="rack_2">
+      <static>true</static>
+      <pose>0 0 1 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>1.5 4 2</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>1.5 4 2</size></box></geometry><material><ambient>0.6 0.6 0.6 1</ambient><diffuse>0.6 0.6 0.6 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="rack_3">
+      <static>true</static>
+      <pose>4 0 1 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>1.5 4 2</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>1.5 4 2</size></box></geometry><material><ambient>0.6 0.6 0.6 1</ambient><diffuse>0.6 0.6 0.6 1</diffuse></material></visual>
+      </link>
+    </model>
+
+    <!-- 3 Obstacles -->
+    <model name="obs_1">
+      <static>true</static>
+      <pose>-2 3.5 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.4</radius><length>1</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.4</radius><length>1</length></cylinder></geometry><material><ambient>0.2 0.2 0.8 1</ambient><diffuse>0.2 0.2 0.8 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="obs_2">
+      <static>true</static>
+      <pose>2 3.5 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.8 0.8 1</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.8 0.8 1</size></box></geometry><material><ambient>0.2 0.8 0.2 1</ambient><diffuse>0.2 0.8 0.2 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="obs_3">
+      <static>true</static>
+      <pose>0 -3.5 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><cylinder><radius>0.5</radius><length>1</length></cylinder></geometry></collision>
+        <visual name="vis"><geometry><cylinder><radius>0.5</radius><length>1</length></cylinder></geometry><material><ambient>0.8 0.2 0.2 1</ambient><diffuse>0.8 0.2 0.2 1</diffuse></material></visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>
