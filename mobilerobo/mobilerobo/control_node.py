@@ -234,9 +234,9 @@ class ControlNode(Node):
 
         self._publish_cmd(linear_x, angular_z)
 
-        self.get_logger().debug(
-            f'[TRACKING] cx_err={cx_error:.1f}  area_err={area_error:.0f}  '
-            f'lin={linear_x:.3f}  ang={angular_z:.3f}'
+        self.get_logger().info(
+            f'[{self._state}] cx_err: {cx_error:6.1f} | area_err: {area_error:6.0f} | '
+            f'Cmd: v={linear_x:5.3f}, w={angular_z:5.3f}'
         )
 
     # ── Watchdog: handle lost target ──────────────────────────────────────────
@@ -257,6 +257,7 @@ class ControlNode(Node):
 
             # Gentle forward+turn scan (Ackerman: must move to steer)
             self._publish_cmd(self.SCAN_FORWARD_SPEED, self.SCAN_TURN_SPEED)
+            self.get_logger().info(f'[{self._state}] Scanning for target... (v={self.SCAN_FORWARD_SPEED}, w={self.SCAN_TURN_SPEED})')
 
 
 def main(args=None):

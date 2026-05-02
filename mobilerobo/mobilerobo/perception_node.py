@@ -167,20 +167,38 @@ class PerceptionNode(Node):
             })
             self._pub_target.publish(String(data=payload))
 
-            # ── 5. Annotate debug image ───────────────────────────────────────
+        # ── 5. Annotate debug image ───────────────────────────────────────
+        # Draw ALL valid contours in blue for debugging
+        for cnt in contours:
+            cv2.drawContours(debug_frame, [cnt], -1, (255, 0, 0), 1)
+
+        if best is not None:
+            # Draw BEST contour in green
             cv2.drawContours(debug_frame, [best], -1, (0, 255, 0), 2)
-            cv2.circle(debug_frame, (cx, cy), 6, (255, 0, 0), -1)
-            # Cross-hair at image centre
-            cv2.line(debug_frame, (img_w // 2, 0), (img_w // 2, img_h), (200, 200, 200), 1)
+            cv2.circle(debug_frame, (cx, cy), 6, (0, 0, 255), -1)
+
+        # Cross-hair at image centre
+        cv2.line(debug_frame, (img_w // 2, 0), (img_w // 2, img_h), (200, 200, 200), 1)
+        
+        if best is not None:
             # Lateral error line
             cv2.line(debug_frame, (img_w // 2, cy), (cx, cy), (0, 0, 255), 2)
             cv2.putText(debug_frame,
-                        f'BOX  cx={cx}  cy={cy}  area={int(area)}',
-                        (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 255, 0), 2)
+                        f'BOX: cx={cx} area={int(area)}',
+                        (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+        else:
+            cv2.putText(debug_frame, 'TARGET LOST', (10, 30), 
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+
+        # Create HSV mask debug view (convert grayscale to BGR for concatenation)
+        mask_bgr = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
+        
+        # Concatenate side-by-side: [Annotated | Mask]
+        composite_debug = cv2.hconcat([debug_frame, mask_bgr])
 
         # Publish debug image
         try:
-            debug_msg = self._bridge.cv2_to_imgmsg(debug_frame, encoding='bgr8')
+            debug_msg = self._bridge.cv2_to_imgmsg(composite_debug, encoding='bgr8')
             debug_msg.header = msg.header
             self._pub_debug.publish(debug_msg)
         except Exception as e:
