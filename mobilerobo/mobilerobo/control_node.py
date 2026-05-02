@@ -96,7 +96,7 @@ class ControlNode(Node):
 
     # Scan speed when no target is visible (rad/s & m/s)
     SCAN_TURN_SPEED   = 0.25
-    SCAN_FORWARD_SPEED = 0.08
+    SCAN_FORWARD_SPEED = 0.03
 
     def __init__(self):
         super().__init__('control_node')

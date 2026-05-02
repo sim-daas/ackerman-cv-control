@@ -157,12 +157,38 @@ class PerceptionNode(Node):
             peri = cv2.arcLength(cnt, True)
             approx = cv2.approxPolyDP(cnt, 0.04 * peri, True)
 
-            # Look for quadrilateral-like shapes (4-8 vertices)
+            # Look for quadrilateral-like shapes (4 vertices)
             if len(approx) == 4:
-                if area_cnt > max_area:
-                    max_area = area_cnt
-                    best = approx
-                    area = area_cnt
+                # ── 4. Squareness Check (To distinguish cube from cylinder) ──
+                # A cube seen head-on or from a slight angle is roughly square.
+                # A cylinder seen from the side is a tall/wide rectangle.
+                
+                # Get the 4 points
+                pts = approx.reshape(4, 2)
+                # Compute lengths of all 4 sides
+                sides = []
+                for i in range(4):
+                    p1 = pts[i]
+                    p2 = pts[(i+1)%4]
+                    dist = np.linalg.norm(p1 - p2)
+                    sides.append(dist)
+                
+                max_s = max(sides)
+                min_s = min(sides)
+                
+                # Check 1: Side length consistency (User suggested ~10-20%)
+                # We use 25% to be robust to perspective tilting
+                if min_s > 0 and (max_s / min_s) < 1.25:
+                    
+                    # Check 2: Aspect ratio of the bounding box
+                    x, y, w, h = cv2.boundingRect(approx)
+                    aspect_ratio = float(w) / h
+                    if 0.75 < aspect_ratio < 1.35:
+                        
+                        if area_cnt > max_area:
+                            max_area = area_cnt
+                            best = approx
+                            area = area_cnt
 
         if best is not None:
             # Centroid
@@ -171,7 +197,7 @@ class PerceptionNode(Node):
                 cx = int(M['m10'] / M['m00'])
                 cy = int(M['m01'] / M['m00'])
             
-            # ── 4. Publish Target Info ───────────────────────────────────────
+            # ── 5. Publish Target Info ───────────────────────────────────────
             payload = json.dumps({
                 'cx': cx,
                 'cy': cy,
